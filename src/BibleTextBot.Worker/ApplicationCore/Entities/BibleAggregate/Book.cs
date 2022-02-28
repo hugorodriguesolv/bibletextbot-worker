@@ -2,10 +2,17 @@
 {
     public class Book
     {
-        public Book(string abbreviation, string name, VersionBible version, Testament testament, IEnumerable<Chapter> chapters)
+        public Book(
+            string abbreviation,
+            string name,
+            Language language,
+            VersionBible version,
+            Testament testament,
+            IEnumerable<Chapter> chapters)
         {
             Abbreviation = abbreviation;
             Name = name;
+            Language = language;
             Version = version;
             Testament = testament;
             Chapters = chapters;
@@ -19,13 +26,12 @@
 
         public string Name { get; set; }
 
+        public Language Language { get; set; }
+
         public VersionBible Version { get; set; }
 
         public Testament Testament { get; set; }
 
         public IEnumerable<Chapter> Chapters { get; set; }
-
-
-
     }
 }

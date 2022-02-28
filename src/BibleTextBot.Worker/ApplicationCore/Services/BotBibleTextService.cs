@@ -34,6 +34,7 @@ public class BotBibleTextService : IBotBibleTextService
         {
             var bible = new Bible();
             var bibleVersion = new VersionBible(version.Abbreviation, version.Description);
+            var bibleLanguage = new Language(version.LanguageFilter.Abbreviation, version.LanguageFilter.Description);
 
             foreach (var testament in version.TestamentFilters)
             {
@@ -67,7 +68,7 @@ public class BotBibleTextService : IBotBibleTextService
                         bibleChapters.Add(new Chapter(chapterNumber, verses));
                     }
 
-                    bible.AddBook(new Book(book.Abbreviation, book.Description, bibleVersion, bibleTestament, bibleChapters));
+                    bible.AddBook(new Book(book.Abbreviation, book.Description, bibleLanguage, bibleVersion, bibleTestament, bibleChapters));
                 }
             }
 
