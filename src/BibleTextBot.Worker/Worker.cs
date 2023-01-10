@@ -15,12 +15,15 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _botTextoBiblicoService.GetBibleTextAsync();
+        _logger.LogInformation("Worker started at: {time}", DateTimeOffset.Now);
 
-        //while (!stoppingToken.IsCancellationRequested)
-        //{
-        //    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-        //    await Task.Delay(1000, stoppingToken);
-        //}
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+            _botTextoBiblicoService.GetBibleTextAsync();
+            await Task.Delay(1000, stoppingToken);
+        }
+
+        _logger.LogInformation("Worker stoped at: {time}", DateTimeOffset.Now);
     }
 }

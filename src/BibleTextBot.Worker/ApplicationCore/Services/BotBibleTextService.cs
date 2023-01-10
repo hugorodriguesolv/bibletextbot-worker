@@ -75,10 +75,16 @@ public class BotBibleTextService : IBotBibleTextService
         }
     }
 
-    private async void RegisterBiblicalTextAsync(Bible bible)
+    private void RegisterBiblicalTextAsync(Bible bible)
     {
-        await _context
+        var insertBible = bible.BookItems.FirstOrDefault();
+
+        if (insertBible != null)
+        {
+            _context
             .GetCollection<Book>()
-            .InsertManyAsync(bible.BookItems);
+            .InsertOne(insertBible);
+            //.InsertManyAsync(bible.BookItems);
+        }
     }
 }

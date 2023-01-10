@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "composeLaunchAction": "None",
+      "composeLaunchServiceName": "bibletextbot.worker",
+      "serviceActions": {
+        "bibletextbot.worker": "StartDebugging",
+        "mongodb": "StartWithoutDebugging"
+      }
+    }
+  }
+}
