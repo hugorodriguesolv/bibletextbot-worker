@@ -35,7 +35,7 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("Worker started at: {time}", DateTimeOffset.Now);
+        _logger.LogInformation("Worker started executed at: {time}", DateTimeOffset.Now);
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -43,7 +43,12 @@ public class Worker : BackgroundService
             _botTextoBiblicoService.GetBibleTextAsync();
             await Task.Delay(1000, stoppingToken);
         }
+    }
 
-        _logger.LogInformation("Worker stoped at: {time}", DateTimeOffset.Now);
+    public override Task StopAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Worker stoped executed at: {time}", DateTimeOffset.Now);
+
+        return base.StopAsync(cancellationToken);
     }
 }
