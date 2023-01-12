@@ -348,3 +348,6 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+/volume-elasticsearch-data/nodes/0/indices
+/volume-elasticsearch-data/nodes/0/_state
+/volume-elasticsearch-data/nodes/0/node.lock
