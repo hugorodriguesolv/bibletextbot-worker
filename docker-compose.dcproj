@@ -6,18 +6,20 @@
     <ProjectGuid>808caf27-6237-41c7-91ba-33f11ca896ea</ProjectGuid>
   </PropertyGroup>
   <ItemGroup>
-    <None Include="db-bible\init\mongo-init.js" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="volume-mongo-data\init\mongo-init.js" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="db-bible\config\" />
-    <Folder Include="db-bible\db\" />
+    <None Remove="db-bible\**" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="db-bible\mongo-init.js\**" />
+    <None Remove="volumes-bible\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="volume-elasticsearch-data\" />
   </ItemGroup>
 </Project>

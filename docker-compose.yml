@@ -1,4 +1,4 @@
-version: '3.4'
+version: '3.7'
 
 services:
   mongodb:
@@ -8,9 +8,35 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - ./db-bible/init/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./volume-mongo-data/init/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
       - /data/db
       - /data/config
+    networks:
+      - bibletext-network
+
+  elasticsearch:
+    container_name: ElasticSearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    volumes:
+      - ./volume-elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - bibletext-network
+
+  kibana:
+    container_name: Kibana
+    image: docker.elastic.co/kibana/kibana:7.4.0
+    environment:
+      - "ELASTICSEARCH_HOSTS=http://elasticsearch:9200"
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
     networks:
       - bibletext-network
 
@@ -26,9 +52,10 @@ services:
     networks:
       - bibletext-network
 
-
 volumes:
-  bibletextbot-nosqldata:
+  volume-mongo-data:
+    driver: local
+  volume-elasticsearch-data:
     driver: local
 
 networks:
