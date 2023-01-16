@@ -2,6 +2,7 @@ using BibleTextBot.Worker;
 using BibleTextBot.Worker.ApplicationCore.Interfaces;
 using BibleTextBot.Worker.ApplicationCore.Services;
 using BibleTextBot.Worker.Infrastructure.Data;
+using Serilog;
 
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
@@ -11,5 +12,6 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddHostedService<Worker>();
     })
     .Build();
+
 
 await host.RunAsync();

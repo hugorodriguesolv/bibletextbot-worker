@@ -26,8 +26,17 @@ public class Worker : BackgroundService
             .GetValue<string>("Uri");
 
         Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
             .Enrich.FromLogContext()
-            .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri)) { AutoRegisterTemplate = true })
+            .Enrich.WithMachineName()
+            .WriteTo.Console()
+            .WriteTo.Debug(Serilog.Events.LogEventLevel.Information)
+            .WriteTo.Elasticsearch(new ElasticsearchSinkOptions()
+            {
+                AutoRegisterTemplate = true,
+                AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
+                IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name!.ToLower().Replace(".", "-")}-{Environment.MachineName?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}"
+            })
             .CreateLogger();
 
         return base.StartAsync(cancellationToken);
@@ -40,7 +49,9 @@ public class Worker : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-            _botTextoBiblicoService.GetBibleTextAsync();
+            await _botTextoBiblicoService.GetBibleTextAsync();
+
+            _logger.LogInformation("Worker next executed at: {time}", DateTimeOffset.Now);
             await Task.Delay(1000, stoppingToken);
         }
     }

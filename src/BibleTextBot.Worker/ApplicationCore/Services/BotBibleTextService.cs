@@ -26,7 +26,7 @@ public class BotBibleTextService : IBotBibleTextService
             .Get<SettingBibleOnline>();
     }
 
-    public async void GetBibleTextAsync()
+    public async Task GetBibleTextAsync()
     {
         var bibleTextFilter = new BibleTextFilter();
 
@@ -89,6 +89,8 @@ public class BotBibleTextService : IBotBibleTextService
         }
 
         _logger.LogInformation("Biblical text capture process ended at: {time}", DateTimeOffset.Now);
+
+        return;
     }
 
     private void RegisterBiblicalTextAsync(Bible bible)
