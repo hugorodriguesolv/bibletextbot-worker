@@ -351,3 +351,5 @@ MigrationBackup/
 /volume-elasticsearch-data/nodes/0/indices
 /volume-elasticsearch-data/nodes/0/_state
 /volume-elasticsearch-data/nodes/0/node.lock
+/volume_elasticsearch/data
+/volume_mongo/data
