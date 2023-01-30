@@ -11,7 +11,7 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
-    <None Include="volume-mongo-data\init\mongo-init.js" />
+    <None Include="volume_mongo_data\init\mongo-init.js" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="db-bible\**" />
@@ -20,6 +20,9 @@
     <None Remove="volumes-bible\**" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="volume-elasticsearch-data\" />
+    <None Remove="volume_elasticsearch_data\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="volume_mongo_data\**" />
   </ItemGroup>
 </Project>

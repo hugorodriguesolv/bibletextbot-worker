@@ -1,8 +1,6 @@
 ﻿namespace BibleTextBot.Worker;
 
 using ApplicationCore.Interfaces;
-using Serilog;
-using Serilog.Sinks.Elasticsearch;
 
 public class Worker : BackgroundService
 {
@@ -21,24 +19,7 @@ public class Worker : BackgroundService
 
     public override Task StartAsync(CancellationToken cancellationToken)
     {
-        var elasticUri = configuration
-            .GetSection("ElasticSettings")
-            .GetValue<string>("Uri");
-
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Information)
-            .Enrich.FromLogContext()
-            .Enrich.WithMachineName()
-            .WriteTo.Console()
-            .WriteTo.Debug(Serilog.Events.LogEventLevel.Information)
-            .WriteTo.Elasticsearch(new ElasticsearchSinkOptions()
-            {
-                AutoRegisterTemplate = true,
-                AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv7,
-                IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name!.ToLower().Replace(".", "-")}-{Environment.MachineName?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}"
-            })
-            .CreateLogger();
-
+        _logger.LogInformation("Worker started at: {time}", DateTimeOffset.Now);
         return base.StartAsync(cancellationToken);
     }
 
