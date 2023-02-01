@@ -33,10 +33,11 @@ services:
         find . -type d -exec chmod 750 \{\} \;;
         find . -type f -exec chmod 640 \{\} \;;
         echo "Waiting for Elasticsearch availability";
-        until curl -s --cacert config/certs/ca/ca.crt https://elasticsearchnode1:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
-        echo "Setting kibana_system password";
-        until curl -s -X POST --cacert config/certs/ca/ca.crt -u 'elastic:P@ssW0rd' -H 'Content-Type:application/json' 'https://elasticsearchnode1:9200/_security/user/kibana_system/_password' -d '{\"password\":\"P@ssW0rd\"}' | grep -q "^{}"; do sleep 10; done;
-        echo "finish config!";'
+        echo "Sleep 40 seconds"
+        sleep 40
+        curl -s --cacert config/certs/ca/ca.key https://elasticsearchnode1:9200 
+        if curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:P@ssW0rd" -H "Content-Type:application/json" "https://elasticsearchnode1:9200/_security/user/kibana_system/_password" -d "{\"password\":\"P@ssW0rd\"}" | grep -q "^{}"; then echo "Success altered password!"; else echo "Password change failed"; fi
+        echo "Finish config!";'
     networks:
       - bibletext_network
 

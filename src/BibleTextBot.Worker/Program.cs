@@ -18,8 +18,9 @@ IHost host = Host.CreateDefaultBuilder(args)
            .Enrich.WithMachineName()
            .WriteTo.Console()
            .WriteTo.Debug(Serilog.Events.LogEventLevel.Information)
-           .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200"))
+           .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("https://elasticsearchnode1:9200"))
            {
+               ModifyConnectionSettings = x => x.BasicAuthentication("elastic", "P@ssW0rd"),
                AutoRegisterTemplate = true,
                IndexFormat = $"{Assembly.GetExecutingAssembly().GetName().Name!.ToLower().Replace(".", "-")}-{Environment.MachineName?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}"
            })
