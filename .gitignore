@@ -348,3 +348,9 @@ MigrationBackup/
 
 # Ionide (cross platform F# VS Code tools) working folder
 .ionide/
+
+# Volumes build Docker
+/volume_elasticsearch/data
+/volume_mongo/data
+/volume_kibana/data
+/volume_certs

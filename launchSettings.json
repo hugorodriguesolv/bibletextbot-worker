@@ -7,6 +7,8 @@
       "composeLaunchServiceName": "bibletextbot.worker",
       "serviceActions": {
         "bibletextbot.worker": "StartDebugging",
+        "elasticsearchnode1": "StartWithoutDebugging",
+        "kibana": "StartWithoutDebugging",
         "mongodb": "StartWithoutDebugging"
       }
     }
