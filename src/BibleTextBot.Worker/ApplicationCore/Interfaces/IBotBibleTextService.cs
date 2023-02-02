@@ -2,6 +2,6 @@
 {
     public interface IBotBibleTextService
     {
-        void GetBibleTextAsync();
+        Task GetBibleTextAsync();
     }
 }

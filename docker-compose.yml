@@ -1,15 +1,134 @@
-version: '3.4'
+version: '3.9'
 
 services:
+  setupelasticsearch:
+    container_name: setupelasticsearch
+    image: elasticsearch:8.6.0
+    volumes:
+      - ./volume_certs:/usr/share/elasticsearch/config/certs
+    user: "0"
+    command: >
+      bash -c '
+        if [ ! -f config/certs/ca.zip ]; then
+          echo "Creating CA";
+          bin/elasticsearch-certutil ca --silent --pem -out config/certs/ca.zip;
+          unzip config/certs/ca.zip -d config/certs;
+        fi;
+        if [ ! -f config/certs/certs.zip ]; then
+          echo "Creating certs";
+          echo -ne \
+          "instances:\n"\
+          "  - name: elasticsearchnode1\n"\
+          "    dns:\n"\
+          "      - elasticsearchnode1\n"\
+          "      - localhost\n"\
+          "    ip:\n"\
+          "      - 127.0.0.1\n"\
+          > config/certs/instances.yml;
+          bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
+          unzip config/certs/certs.zip -d config/certs;
+        fi;
+        echo "Setting file permissions"
+        chown -R root:root config/certs;
+        find . -type d -exec chmod 750 \{\} \;;
+        find . -type f -exec chmod 640 \{\} \;;
+        echo "Waiting for Elasticsearch availability";
+        echo "Sleep 40 seconds"
+        sleep 40
+        curl -s --cacert config/certs/ca/ca.key https://elasticsearchnode1:9200 
+        if curl -s -X POST --cacert config/certs/ca/ca.crt -u "elastic:P@ssW0rd" -H "Content-Type:application/json" "https://elasticsearchnode1:9200/_security/user/kibana_system/_password" -d "{\"password\":\"P@ssW0rd\"}" | grep -q "^{}"; then echo "Success altered password!"; else echo "Password change failed"; fi
+        echo "Finish config!";'
+    networks:
+      - bibletext_network
+
+  elasticsearchnode1:
+    container_name: elasticsearchnode1
+    image: elasticsearch:8.6.0
+    environment:
+      - node.name=elasticsearchnode1
+      - ELASTIC_PASSWORD=P@ssW0rd
+      - bootstrap.memory_lock=true
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=true
+      - xpack.security.http.ssl.key=certs/elasticsearchnode1/elasticsearchnode1.key
+      - xpack.security.http.ssl.certificate=certs/elasticsearchnode1/elasticsearchnode1.crt
+      - xpack.security.http.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.http.ssl.verification_mode=certificate
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.key=certs/elasticsearchnode1/elasticsearchnode1.key
+      - xpack.security.transport.ssl.certificate=certs/elasticsearchnode1/elasticsearchnode1.crt
+      - xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt
+      - xpack.security.transport.ssl.verification_mode=certificate
+      - xpack.license.self_generated.type=trial
+    volumes:
+      - ./volume_elasticsearch/data/:/usr/share/elasticsearch/data
+      - ./volume_certs:/usr/share/elasticsearch/config/certs
+    ports:
+      - target: 9200
+        published: 9200
+    depends_on:
+      - setupelasticsearch
+    networks:
+      - bibletext_network
+
+  kibana:
+    container_name: kibana
+    image: kibana:8.6.0
+    environment:
+      - SERVERNAME=kibana
+      - ELASTICSEARCH_HOSTS=https://elasticsearchnode1:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=P@ssW0rd
+      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
+    volumes:
+      - ./volume_kibana/data/:/usr/share/kibana/data
+      - ./volume_certs:/usr/share/kibana/config/certs
+    ports:
+      - target: 5601
+        published: 5601
+    depends_on:
+      - elasticsearchnode1
+    networks:
+      - bibletext_network      
+
+  mongodb:
+    container_name: mongodb
+    image: mongo:latest
+    restart: always
+    ports:
+      - target: 27017
+        published: 27017
+    volumes:
+      - ./volume_mongo/init/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./volume_mongo/data/:/data/db
+    networks:
+      - bibletext_network
+
   bibletextbot.worker:
+    container_name: bibletextbotworker
     image: ${DOCKER_REGISTRY-}bibletextbotworker
+    restart: on-failure
     build:
       context: .
       dockerfile: src/BibleTextBot.Worker/Dockerfile
-  
-  nosqldata:
-    image: mongo
+    depends_on:
+      - mongodb
+      - elasticsearchnode1
+    networks:
+      - bibletext_network
 
 volumes:
-  bibletextbot-nosqldata:
-    external: false
+  volume_mongo:
+    driver: local
+  volume_elasticsearch:
+    driver: local
+  volume_kibana:
+    driver: local
+  volume_certs:
+    driver: local
+
+networks:
+  bibletext_network:
+    name: bibletext_network
+    driver: bridge

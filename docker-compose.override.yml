@@ -1,9 +1,8 @@
-version: '3.4'
+version: '3.9'
 
 services:
-  
-  nosqldata:
-    ports:
-      - "27017:27017"
+  bibletextbot.worker:
+    environment:
+      - DOTNET_ENVIRONMENT=Development
     volumes:
-      - bibletextbot-nosqldata:/data/db
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro

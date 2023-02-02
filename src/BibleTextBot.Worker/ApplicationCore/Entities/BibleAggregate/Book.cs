@@ -24,8 +24,5 @@
         public Testament Testament { get; set; }
 
         public IEnumerable<Chapter> Chapters { get; set; }
-
-
-
     }
 }

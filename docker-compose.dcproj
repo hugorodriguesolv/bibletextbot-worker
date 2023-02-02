@@ -3,7 +3,7 @@
   <PropertyGroup Label="Globals">
     <ProjectVersion>2.1</ProjectVersion>
     <DockerTargetOS>Linux</DockerTargetOS>
-    <ProjectGuid>81bf1289-ab3c-4464-884b-f017aa550bb1</ProjectGuid>
+    <ProjectGuid>808caf27-6237-41c7-91ba-33f11ca896ea</ProjectGuid>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">
@@ -11,5 +11,18 @@
     </None>
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
+    <None Include="volume_mongo_data\init\mongo-init.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="db-bible\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="volumes-bible\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="volume_elasticsearch_data\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="volume_mongo_data\**" />
   </ItemGroup>
 </Project>

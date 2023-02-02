@@ -34,6 +34,8 @@
                 var settingDb = MongoClientSettings
                     .FromUrl(new MongoUrl(_mongoSettings.Connection));
 
+                settingDb.ConnectTimeout = TimeSpan.FromMilliseconds(10000); ;
+
                 if (_mongoSettings.IsSSL)
                 {
                     settingDb.SslSettings = new SslSettings
